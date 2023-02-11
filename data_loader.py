@@ -12,7 +12,7 @@ def get_data(path: str, batch_size: int):
     test_set = SpamEmailDataset(path, 1, 0.8)
 
     train_load = DataLoader(train_set, batch_size=batch_size, shuffle=True)
-    test_load = DataLoader(test_set, batch_size=1, shuffle=True)
+    test_load = DataLoader(test_set, batch_size=1, shuffle=False)
 
     return train_load, test_load
 
@@ -28,6 +28,8 @@ class SpamEmailDataset(Dataset):
         end = round(len(file_out) * ratio)
 
         file_out = file_out.drop('Email No.', axis=1)
+
+        file_out = file_out.fillna(0)
 
         x = file_out.loc[start:end, file_out.columns != 'Prediction']
         y = file_out.loc[start:end, 'Prediction']
