@@ -1,0 +1,10 @@
+Hello
+This is to inform you that we have found suspicious activities with your account. Due to that, we have terminated your windows account.
+Please find susipcious incident details:
+Recent Incident Details: Easter Belarus(IP Address: 10.97.87.25)
+MAC Address 01:AD:99:00 & IP: 10.97.87.25
+If you think this was a mistake and you wish to continue using this windows license key, Please contact consumer technical support at 1-800-341-8835.
+PS NOTE: Please be at your compyter while you call consumer technical support.
+
+Windows Help
+1-800-341-8835

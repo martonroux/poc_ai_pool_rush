@@ -24,17 +24,23 @@ class SpamEmailDataset(Dataset):
 
         file_out = pd.read_csv(file_name)
 
+        file_out = file_out.drop('Email No.', axis=1)
+        file_out = file_out.fillna(0)
+
         start = round(len(file_out) * start_ratio)
         end = round(len(file_out) * ratio)
 
-        file_out = file_out.drop('Email No.', axis=1)
+        file_out = file_out.loc[start:end]
 
-        file_out = file_out.fillna(0)
+        df_spam = file_out[file_out['Prediction'] == 1]
+        df_ham = file_out[file_out['Prediction'] == 0][:len(df_spam)]
 
-        x = file_out.loc[start:end, file_out.columns != 'Prediction']
-        y = file_out.loc[start:end, 'Prediction']
+        file_out = pd.concat((df_spam, df_ham))
+        file_out = file_out.sample(frac=1).set_index(np.arange(0, len(file_out), 1), drop=True)
 
-        # Feature Scaling
+        x = file_out.loc[:, file_out.columns != 'Prediction']
+        y = file_out.loc[:, 'Prediction']
+
         sc = StandardScaler()
         x_train = sc.fit_transform(x)
         y_train = np.array(y)
