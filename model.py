@@ -1,5 +1,6 @@
 import numpy
-from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
+from scipy.interpolate import make_interp_spline
 import pandas as pd
 import torch
 import numpy as np
@@ -28,8 +29,11 @@ class MyModel(torch.nn.Module):
 
 
 class App:
-    def __init__(self, lr: float, data_path: str, data_batch_size: int, epoch: int):
-        self.model = MyModel()
+    def __init__(self, lr: float, data_path: str, data_batch_size: int, epoch: int, load_path: str = None):
+        if load_path is not None:
+            self.model = torch.load(load_path)
+        else:
+            self.model = MyModel()
         self.criterion = torch.nn.MSELoss()
         self.optimizer = torch.optim.ASGD(self.model.parameters(), lr=0.0001)
         self.train_load, self.test_load = get_data(data_path, data_batch_size)
@@ -37,6 +41,7 @@ class App:
         self.epoch = epoch
 
     def run(self):
+        global_ll = []
         for epoch in range(self.epoch):
             ll = []
             for batch in self.train_load:
@@ -50,9 +55,14 @@ class App:
                 loss.backward()
 
                 self.optimizer.step()
-            if epoch % 1 == 0:
-                print(f"Epoch: {epoch + 1} / {self.epoch}, Loss: {np.mean(ll)}")
+            print(f"Epoch: {epoch + 1} / {self.epoch}, Loss: {np.mean(ll)}")
+            global_ll.append(np.mean(ll))
+
+        plt.plot(global_ll)
+        plt.title('Loss over time')
+        plt.savefig('loss.png')
         self.test()
+        self.save_model()
         return self.model
 
     def test(self):
@@ -70,6 +80,17 @@ class App:
                 nb_win += 1
 
         print("Accuracy on test set: {}%".format(round((nb_win / nb_all) * 100), 2))
+
+    def save_model(self):
+        yes_no = input('Do you wish to save the model? [y/n]')
+
+        while yes_no not in ['y', 'n']:
+            yes_no = input('Wrong answer. Must be y/n: ')
+
+        if yes_no == 'n':
+            return
+        model_name = input('Insert file name: ')
+        torch.save(self.model, 'models/' + model_name + '.pt')
 
     def test_own_data(self, file_path: str):
         f = open(file_path, 'r')
