@@ -35,7 +35,7 @@ class App:
         else:
             self.model = MyModel()
         self.criterion = torch.nn.MSELoss()
-        self.optimizer = torch.optim.ASGD(self.model.parameters(), lr=0.0001)
+        self.optimizer = torch.optim.ASGD(self.model.parameters(), lr=lr)
         self.train_load, self.test_load = get_data(data_path, data_batch_size)
         self.batch_size = data_batch_size
         self.epoch = epoch
